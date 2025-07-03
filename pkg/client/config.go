@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -219,6 +220,10 @@ func UnmarshalJSONConfig(data []byte, rejectUnknown bool) (Config, error) {
 }
 
 func ParseConfigYAML(ctx context.Context, path string, data []byte) (Config, error) {
+	data = bytes.TrimSpace(data)
+	if len(data) == 0 {
+		return GetDefaultConfig(), nil
+	}
 	data, err := yaml.YAMLToJSON(data)
 	if err != nil {
 		return nil, err
@@ -702,6 +707,10 @@ type Grpc struct {
 	// TeleroutePort is the port where the containerized daemon exposes its Teleroute service that the Teleroute
 	// Docker Network plugin will connect to.
 	TeleroutePort uint16 `json:"teleroutePort"`
+
+	// SimulateDisconnect can be set to a duration to simulate a disconnect some time after connecting.
+	// Intended for debugging purposes only.
+	SimulateDisconnect time.Duration `json:"simulateDisconnect"`
 }
 
 var defaultGrpc = Grpc{ //nolint:gochecknoglobals // constant
