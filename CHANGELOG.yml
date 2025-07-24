@@ -28,15 +28,41 @@ items:
     date: (TBD)
     notes:
       - type: feature
+        title: Serve up a web-page with telepresence serve.
+        body: >-
+          A new `telepresence serve <service>` command was added that starts a web browser on the specified service. The
+          command is especially useful when used in combination with `telepresence connect --docker` because it will
+          then expose the given service on a random port on localhost.
+      - type: feature
         title: add ability to optionally clean up sidecars that have been idle above a specified duration
         body: >-
           Added configuration parameter `agent.maxIdleTime` to the Helm Chart, to control how long a sidecar can be idle before it is cleaned up.
           The updating of latestEngagementTime is done every 1m in the Remain Call, which is now called every 1min, compared to every 5s in the past.
           The agent state (containing latestEngagementTime) is updated in memory, and lazily persisted to the traffic-manager configmap every 2min.
           Removal of the sidecar is also done in the Remain Call, if the sidecar has been idle for longer than the configured `agent.maxIdleTime`.
-  - version: 2.23.4
-    date: (TBD)
+      - type: feature
+        title: add option to drop client label in prometheus metrics for GDPR compliance
+        docs: https://github.com/telepresenceio/telepresence/issues/3491
+        body: >-
+          The Helm Chart now has a `prometheus.dropClientLabel` option that can be set to true to drop the client label from the prometheus metrics.
+          This is useful for GDPR compliance, as the client label contains personal data, which can be potentially problematic, i.e allowing the ability to 
+          track the working times of an individual.
+  - version: 2.23.5
+    date: 2025-07-20
     notes:
+      - type: bugfix
+        title: Let docker.Start pass on --interactive to docker start.
+        body: >-
+          An `-i` or `--interactive` flag given when the user runs a container with telepresence must be propagated to
+          `docker start` to attach `stdin`.
+  - version: 2.23.4
+    date: 2025-07-18
+    notes:
+      - type: bugfix
+        title: Never truncate meaningful output from a command
+        body: >-
+          The new human-friendly output using a progress reporter would sometimes truncate error output. This is no
+          longer the case. Instead, all output will be wrapped.
       - type: bugfix
         title: Typo in client mount-policy "RemoteReadonly" should be "RemoteReadOnly"
         body: >-
@@ -58,7 +84,7 @@ items:
           in an `NXDOMAIN` error that doesn't trigger renewed attempts.
   
           Also, the recursion check now handles that the cluster's DNS adds suffixes from its search-path.
-        docs: reference/config#DNS
+        docs: reference/config#recursioncheck
   - version: 2.23.3
     date: 2025-07-07
     notes:
